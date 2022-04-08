@@ -1,6 +1,5 @@
 package com.petamind.example.jetweathercleanarchitecture
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting(BuildConfig.WEATHER_KEY)
+                    MainScreen(BuildConfig.WEATHER_KEY)
                 }
             }
         }
@@ -33,7 +32,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
+fun MainScreen(name: String) {
     Text(text = "Hello $name!")
 }
 
@@ -41,6 +40,6 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     JetWeatherCleanArchitectureTheme {
-        Greeting("Android")
+        MainScreen("Android")
     }
 }
