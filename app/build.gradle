@@ -57,12 +57,22 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
 
-    //Security
+    def nav_version = "2.4.2"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
 
+    //Room
+    def room_version = "2.4.2"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    //Security
     implementation "androidx.security:security-crypto:1.0.0"
+
     //Hilt dagger
     implementation "com.google.dagger:hilt-android:$hilt_android_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_android_version"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
     //Retrofit GSON
     def retrofit_version ='2.9.0'
@@ -83,4 +93,6 @@ dependencies {
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_android_version"
     // ...with Kotlin.
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_android_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+
 }
