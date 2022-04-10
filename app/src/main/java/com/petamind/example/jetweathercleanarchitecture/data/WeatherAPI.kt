@@ -1,8 +1,7 @@
 package com.petamind.example.jetweathercleanarchitecture.data
 
 import com.petamind.example.jetweathercleanarchitecture.BuildConfig
-import com.petamind.example.jetweathercleanarchitecture.data.model.WeatherObject
-import com.petamind.example.jetweathercleanarchitecture.util.Constants
+import com.petamind.example.jetweathercleanarchitecture.data.model.Weather
 import retrofit2.http.GET
 import retrofit2.http.Query
 import javax.inject.Singleton
@@ -15,6 +14,6 @@ interface WeatherAPI {
         @Query(value = "id") id: String = "2193733",
         @Query(value = "appid") appid: String = BuildConfig.WEATHER_KEY,
         @Query(value = "units") units: String = "metric"
-    ) : WeatherObject
+    ) : Weather
 
 }

@@ -12,43 +12,67 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.petamind.example.jetweathercleanarchitecture.R
+import com.petamind.example.jetweathercleanarchitecture.data.DataOrException
+import com.petamind.example.jetweathercleanarchitecture.data.model.Weather
 import com.petamind.example.jetweathercleanarchitecture.domain.viewmodel.WeatherViewModel
+import java.lang.Exception
 
 @Composable
-fun MainScreen(navController: NavHostController, weatherViewModel: WeatherViewModel = hiltViewModel()) {
+fun MainScreen(
+    navController: NavHostController,
+    weatherViewModel: WeatherViewModel = hiltViewModel()
+) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(8.dp), verticalArrangement = Arrangement.Top) {
+            .padding(8.dp), verticalArrangement = Arrangement.Top
+    ) {
         SearchBar()
-        Text(text = "Main")
+        ShowData(weatherViewModel = weatherViewModel)
     }
-
 }
 
 @Composable
-fun MenuView(){
-    var expanded by remember{
+fun ShowData(weatherViewModel: WeatherViewModel) {
+    val weatherData = produceState<DataOrException<Weather, Boolean, Exception>>(
+        initialValue = DataOrException(loading = true)
+    )
+    {
+        value = weatherViewModel.getWeather()
+    }.value
+
+    if(weatherData.loading == true){
+        CircularProgressIndicator()
+    } else  if (weatherData.data != null){
+        Text(text = "Main screen ${weatherData.data!!.city.country}")
+    }
+}
+
+@Composable
+fun MenuView() {
+    var expanded by remember {
         mutableStateOf(false)
     }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .wrapContentSize(Alignment.TopStart)){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.TopStart)
+    ) {
         IconButton(onClick = { expanded = true }) {
             Icon(Icons.Default.MoreVert, contentDescription = "ICON")
 
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        DropdownMenuItem(onClick = { /*TODO*/ }) {
-            Text(text = "Favorite")
+            DropdownMenuItem(onClick = { /*TODO*/ }) {
+                Text(text = "Favorite")
+            }
+            DropdownMenuItem(onClick = { /*TODO*/ }) {
+                Text(text = "Favorite")
+            }
+            DropdownMenuItem(onClick = { /*TODO*/ }) {
+                Text(text = "Favorite")
+            }
         }
-        DropdownMenuItem(onClick = { /*TODO*/ }) {
-            Text(text = "Favorite")
-        }
-        DropdownMenuItem(onClick = { /*TODO*/ }) {
-            Text(text = "Favorite")
-        }
-    }
     }
 
 }
@@ -60,11 +84,12 @@ private fun SearchBar() {
         Box(
             Modifier
                 .fillMaxWidth()
-                .padding(end = 70.dp), contentAlignment = Alignment.Center) {
+                .padding(end = 70.dp), contentAlignment = Alignment.Center
+        ) {
             Text(text = "Moscow, RU")
         }
     }, navigationIcon = {}, elevation = 16.dp)
-    MenuView()
+    //MenuView()
 }
 
 @Composable
