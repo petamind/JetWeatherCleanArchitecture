@@ -1,20 +1,26 @@
 package com.petamind.example.jetweathercleanarchitecture.ui.screens
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.petamind.example.jetweathercleanarchitecture.R
 import com.petamind.example.jetweathercleanarchitecture.data.DataOrException
 import com.petamind.example.jetweathercleanarchitecture.data.model.Weather
 import com.petamind.example.jetweathercleanarchitecture.domain.viewmodel.WeatherViewModel
+import com.petamind.example.jetweathercleanarchitecture.util.Constants
 import java.lang.Exception
 
 @Composable
@@ -27,13 +33,13 @@ fun MainScreen(
             .fillMaxSize()
             .padding(8.dp), verticalArrangement = Arrangement.Top
     ) {
-        SearchBar()
-        ShowData(weatherViewModel = weatherViewModel)
+
+        ShowData(weatherViewModel = weatherViewModel, navController = navController)
     }
 }
 
 @Composable
-fun ShowData(weatherViewModel: WeatherViewModel) {
+fun ShowData(weatherViewModel: WeatherViewModel, navController: NavHostController) {
     val weatherData = produceState<DataOrException<Weather, Boolean, Exception>>(
         initialValue = DataOrException(loading = true)
     )
@@ -41,10 +47,26 @@ fun ShowData(weatherViewModel: WeatherViewModel) {
         value = weatherViewModel.getWeather()
     }.value
 
-    if(weatherData.loading == true){
+    if (weatherData.loading == true) {
         CircularProgressIndicator()
-    } else  if (weatherData.data != null){
-        Text(text = "Main screen ${weatherData.data!!.city.country}")
+    } else if (weatherData.data != null) {
+        MainScaffold(weather = weatherData.data!!, navController)
+    }
+}
+
+@Composable
+fun MainScaffold(weather: Weather, navController: NavHostController) {
+    Scaffold(topBar = {}) {
+        MainContent(weather = weather, navController = navController)
+    }
+}
+
+@Composable
+fun MainContent(weather: Weather, navController: NavController) {
+    AppTopAppBar(title = weather.city.name, icon = Icons.Default.ArrowBack,
+        navController = navController, elevation = 5.dp
+    ){
+        Log.d(Constants.LOG_TAG, "MainContent: Button Clicked")
     }
 }
 
@@ -56,7 +78,7 @@ fun MenuView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .wrapContentSize(Alignment.TopStart)
+            .wrapContentSize(Alignment.CenterEnd)
     ) {
         IconButton(onClick = { expanded = true }) {
             Icon(Icons.Default.MoreVert, contentDescription = "ICON")
@@ -87,18 +109,43 @@ private fun SearchBar() {
                 .padding(end = 70.dp), contentAlignment = Alignment.Center
         ) {
             Text(text = "Moscow, RU")
+            MenuView()
         }
     }, navigationIcon = {}, elevation = 16.dp)
-    //MenuView()
+    //
 }
 
 @Composable
-private fun AppTopAppBar() {
-    TopAppBar(title = { Text(text = "Weather App") }, navigationIcon = {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_baseline_cloud_24),
-            contentDescription = "App Icon",
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }, modifier = Modifier.fillMaxWidth(), elevation = 5.dp)
+private fun AppTopAppBar(
+    title: String = "Title",
+    icon: ImageVector? = null,
+    isMainScreen: Boolean = true,
+    elevation: Dp = 0.dp,
+    navController: NavController,
+    onAddActionClicked: () -> Unit = {},
+    onButtonClicked: () -> Unit = {}
+) {
+    TopAppBar(title = {
+        Text(title)
+    }, navigationIcon = {
+        if (icon != null) {
+            Icon(
+                imageVector = icon, contentDescription = null,
+                tint = MaterialTheme.colors.onSecondary,
+                modifier = Modifier.clickable {
+                    onButtonClicked.invoke()
+                }
+            )
+        }
+    }, actions = {
+        if (isMainScreen) {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Search, "Search Icon")
+            }
+            Icon(imageVector = Icons.Default.MoreVert, "More Button")
+        } else {
+            Box {}
+        }
+
+    })
 }
