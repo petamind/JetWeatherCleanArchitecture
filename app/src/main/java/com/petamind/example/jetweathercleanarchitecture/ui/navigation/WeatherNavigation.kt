@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.petamind.example.jetweathercleanarchitecture.domain.viewmodel.WeatherViewModel
 import com.petamind.example.jetweathercleanarchitecture.ui.screens.AboutScreen
 import com.petamind.example.jetweathercleanarchitecture.ui.screens.MainScreen
+import com.petamind.example.jetweathercleanarchitecture.ui.screens.SearchScreen
 import com.petamind.example.jetweathercleanarchitecture.ui.screens.SplashScreen
 
 @Preview
@@ -27,6 +28,10 @@ fun WeatherNavigation() {
 
         composable(WeatherScreens.AboutScreen.name){
             AboutScreen(navController = navController)
+        }
+
+        composable(WeatherScreens.SearchScreen.name){
+            SearchScreen(navController = navController)
         }
     }
 }
