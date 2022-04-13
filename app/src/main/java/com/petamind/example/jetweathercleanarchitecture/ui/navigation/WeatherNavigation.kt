@@ -3,9 +3,11 @@ package com.petamind.example.jetweathercleanarchitecture.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.petamind.example.jetweathercleanarchitecture.domain.viewmodel.WeatherViewModel
 import com.petamind.example.jetweathercleanarchitecture.ui.screens.AboutScreen
 import com.petamind.example.jetweathercleanarchitecture.ui.screens.MainScreen
@@ -21,9 +23,16 @@ fun WeatherNavigation() {
             SplashScreen(navController = navController)
         }
 
-        composable(WeatherScreens.MainScreen.name){
-            val weatherViewModel = hiltViewModel<WeatherViewModel>()
-            MainScreen(navController = navController, weatherViewModel)
+        val mainRoute = WeatherScreens.MainScreen.name
+        composable("$mainRoute/{cityId}", arguments = listOf(
+            navArgument(name = "cityId"){
+                type = NavType.StringType
+            }
+        )){ navBack ->
+            navBack.arguments?.getString("cityId").let {
+                val weatherViewModel = hiltViewModel<WeatherViewModel>()
+                MainScreen(navController = navController, weatherViewModel, city = it)
+            }
         }
 
         composable(WeatherScreens.AboutScreen.name){

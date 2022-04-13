@@ -11,7 +11,7 @@ import javax.inject.Inject
 class Repository @Inject constructor(private val api: WeatherAPI) {
     suspend fun getWeather(cityId: String = Constants.City_ID["auckland"] ?:"6612109"): DataOrException<Weather, Boolean, Exception> {
         val response = try {
-            api.getWeatherData(query = cityId)
+            api.getWeatherData(id = cityId)
         } catch (e: Exception
         ){
             Log.d(Constants.LOG_TAG, "getWeather: $e")

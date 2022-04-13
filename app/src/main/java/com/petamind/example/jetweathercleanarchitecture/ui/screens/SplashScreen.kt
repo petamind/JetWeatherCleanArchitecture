@@ -33,6 +33,8 @@ fun SplashScreen(navController: NavHostController) {
         Animatable(initialValue = 0f)
     }
 
+    val defaultCityId = "2193733"
+
     LaunchedEffect(key1 = true, block = {
         scale.animateTo(targetValue = 0.99f, animationSpec = tween(
             durationMillis = 800,
@@ -42,7 +44,7 @@ fun SplashScreen(navController: NavHostController) {
             }
         ))
         delay(2000L)
-        navController.navigate(route = WeatherScreens.MainScreen.name)
+        navController.navigate(route = WeatherScreens.MainScreen.name + "/$defaultCityId")
     })
     Surface(
         modifier = Modifier

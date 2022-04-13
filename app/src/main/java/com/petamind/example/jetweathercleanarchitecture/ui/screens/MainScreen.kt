@@ -9,17 +9,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,25 +40,25 @@ import java.lang.Exception
 @Composable
 fun MainScreen(
     navController: NavHostController,
-    weatherViewModel: WeatherViewModel = hiltViewModel()
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    city: String?
 ) {
     Column(
         Modifier
             .fillMaxSize()
             .padding(8.dp), verticalArrangement = Arrangement.Top
     ) {
-
-        ShowData(weatherViewModel = weatherViewModel, navController = navController)
+        ShowData(weatherViewModel = weatherViewModel, navController = navController, city = city)
     }
 }
 
 @Composable
-fun ShowData(weatherViewModel: WeatherViewModel, navController: NavHostController) {
+fun ShowData(weatherViewModel: WeatherViewModel, navController: NavHostController, city: String?) {
     val weatherData = produceState<DataOrException<Weather, Boolean, Exception>>(
         initialValue = DataOrException(loading = true)
     )
     {
-        value = weatherViewModel.getWeather()
+        value = weatherViewModel.getWeather(cityId = city?:"2193733")
     }.value
 
     if (weatherData.loading == true) {
@@ -77,10 +74,12 @@ fun MainScaffold(weather: Weather, navController: NavHostController) {
         Column {
             AppTopAppBar(
                 title = weather.city.name, icon = Icons.Default.ArrowBack,
-                navController = navController, elevation = 5.dp
+                elevation = 5.dp, navController = navController, onButtonClicked = {
+                    navController.navigate(WeatherScreens.SearchScreen.name)
+                    Log.d(Constants.LOG_TAG, "MainScaffold: Button Clicked")
+                }
             ) {
-                navController.navigate(WeatherScreens.SearchScreen.name)
-                Log.d(Constants.LOG_TAG, "MainScaffold: Button Clicked")
+                navController.popBackStack()
             }
             val imageUrl =
                 "https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}.png"
@@ -167,24 +166,33 @@ fun MenuView() {
     var expanded by remember {
         mutableStateOf(false)
     }
-    Box(
+    IconButton(onClick = { expanded = true }) {
+        Icon(Icons.Default.MoreVert, contentDescription = "ICON")
+    }
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.CenterEnd)
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.TopEnd).absolutePadding(top = 20.dp, right = 20.dp)
     ) {
-        IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "ICON")
 
-        }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(onClick = { /*TODO*/ }) {
-                Text(text = "Favorite")
+               // Row(Modifier.fillMaxWidth().wrapContentSize(align = TopEnd)) {
+                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favicon")
+                    Text(text = "Favorite")
+                //}
             }
             DropdownMenuItem(onClick = { /*TODO*/ }) {
-                Text(text = "Favorite")
+                //Row(Modifier.fillMaxWidth().wrapContentSize(align = TopEnd)) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = "Favicon")
+                    Text(text = "About")
+                //}
             }
             DropdownMenuItem(onClick = { /*TODO*/ }) {
-                Text(text = "Favorite")
+                //Row(Modifier.fillMaxWidth().wrapContentSize(align = TopEnd)) {
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "Favicon")
+                    Text(text = "Settings")
+                //}
             }
         }
     }
@@ -215,7 +223,8 @@ fun AppTopAppBar(
     elevation: Dp = 0.dp,
     navController: NavController,
     onAddActionClicked: () -> Unit = {},
-    onButtonClicked: () -> Unit = {}
+    onButtonClicked: () -> Unit = {},
+    onBackButtonClicked: () -> Boolean
 ) {
     TopAppBar(title = {
         Text(
@@ -230,7 +239,7 @@ fun AppTopAppBar(
                 imageVector = icon, contentDescription = null,
                 tint = MaterialTheme.colors.onSecondary,
                 modifier = Modifier.clickable {
-                    onButtonClicked.invoke()
+                    onBackButtonClicked.invoke()
                 }
             )
         }
@@ -239,7 +248,8 @@ fun AppTopAppBar(
             IconButton(onClick = { onButtonClicked.invoke() }) {
                 Icon(imageVector = Icons.Default.Search, "Search Icon")
             }
-            Icon(imageVector = Icons.Default.MoreVert, "More Button")
+            //Icon(imageVector = Icons.Default.MoreVert, "More Button")
+            MenuView()
         } else {
             Box {}
         }

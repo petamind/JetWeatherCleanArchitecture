@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WeatherViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    suspend fun getWeather(cityId: String = "2193733"): DataOrException<Weather, Boolean, java.lang.Exception> {
+    suspend fun getWeather(cityId: String = Constants.City_ID[" "]?:""): DataOrException<Weather, Boolean, java.lang.Exception> {
         return repository.getWeather(cityId = cityId)
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.petamind.example.jetweathercleanarchitecture.ui.navigation.WeatherScreens
 import com.petamind.example.jetweathercleanarchitecture.util.Constants
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -28,8 +29,9 @@ fun SearchScreen(
     navController: NavController, onSearch: (String) -> Unit = {
         Log.d(
             Constants.LOG_TAG,
-            "SearchScreen: "
+            "SearchScreen: $it"
         )
+        navController.navigate(WeatherScreens.MainScreen.name+"/${Constants.City_ID[it]}")
     }
 ) {
     val searchQueryState = rememberSaveable {
@@ -45,6 +47,9 @@ fun SearchScreen(
                 navController = navController,
                 isMainScreen = false,
                 icon = Icons.Default.ArrowBack,
+                onBackButtonClicked = {
+                    navController.popBackStack()
+                },
                 onButtonClicked = {
                     navController.popBackStack()
                 }
